@@ -1,7 +1,4 @@
 <?php
-
-use JetBrains\PhpStorm\NoReturn;
-
 class Router {
     public function __construct()
     {
@@ -163,7 +160,7 @@ class Router {
         }
         return true;
     }
-    #[NoReturn] public function not_found(): void {
+    public function not_found(): void {
         http_response_code(404);
         die();
     }
@@ -171,4 +168,5 @@ class Router {
 $router = new Router();
 $router->get("/", "views/index.php");
 $router->get("/example", "views/example.php");
+$router->post("/exampleAction", "views/exampleAction.php");
 $router->not_found();

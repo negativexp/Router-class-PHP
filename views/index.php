@@ -7,19 +7,20 @@ if(isset($_POST["valuePOST"])) {
 }
 ?>
 
-<h1>this form WILL work</h1>
+<h1>this form WILL work (GET method)</h1>
 <form method="get">
     <input type="text" name="valueGET" required>
     <input type="submit">
 </form>
 
-<h1>this form will NOT work</h1>
-<p>why? because this index file is set on GET method and this form is set for POST method</p>
-<p>$router->get("/", "views/index.php");</p>
-<p>that's why POST methods won't work, make sure to use POST method like this:</p>
-<p>$router->post("/example", "views/index.php");</p>
+<h1>this form will NOT work (POST method)</h1>
 <form method="post">
     <input type="text" name="valuePOST" required>
     <input type="submit">
 </form>
-<a href="/example">example page</a>
+
+<p>why? because this index file is set on GET method and this form is set for POST method</p>
+<p>$router->get("/", "views/index.php");</p>
+<p>that's why POST methods won't work</p>
+
+<a href="/example">post example page</a>
