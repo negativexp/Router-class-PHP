@@ -3,8 +3,8 @@ class Router {
     public function __construct()
     {
         $parsedURL = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
-        //zablokovane slozky
 
+        //zablokovane slozky
         $blockedFolders = ["ahoj", "views"];
 
         //povolené typy souboru který může jakýkoliv uživatel zobrazit
@@ -133,12 +133,12 @@ class Router {
         include_once __DIR__ . "/$path_to_include";
         exit();
     }
-    private function out($text): void
+    public function out($text): void
     {
         echo htmlspecialchars($text);
     }
 
-    private function set_csrf(): void
+    public function set_csrf(): void
     {
         session_start();
         if (!isset($_SESSION["csrf"])) {
@@ -147,7 +147,7 @@ class Router {
         echo '<input type="hidden" name="csrf" value="' . $_SESSION["csrf"] . '">';
     }
 
-    private function is_csrf_valid(): bool
+    public function is_csrf_valid(): bool
     {
         session_start();
         if (!isset($_SESSION['csrf']) || !isset($_POST['csrf'])) {
