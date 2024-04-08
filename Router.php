@@ -1,12 +1,13 @@
 <?php
+
+use JetBrains\PhpStorm\NoReturn;
+
 class Router {
     public function __construct()
     {
         $parsedURL = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
-
-        //zablokovane slozky
-        $blockedFolders = ["ahoj", "views"];
-
+        //zablokované složky
+        $blockedFolders = ["views", "ahoj"];
         //povolené typy souboru který může jakýkoliv uživatel zobrazit
         $fileExtensions = ["svg", "css", "js", "png", "jpeg", "jpg", "webp", "gif", "mp4", "ico", "json", "txt"];
         $fileMimeTypes = [
@@ -24,24 +25,31 @@ class Router {
             "txt" => "text/plain",
         ];
 
+        $this->checkBlockedFolders($blockedFolders, $parsedURL);
+        $this->checkAllowedFileTypes($fileExtensions, $fileMimeTypes, $parsedURL);
+    }
+
+    private function checkBlockedFolders($blockedFolders, $parsedURL): void
+    {
         foreach ($blockedFolders as $blockedFolder) {
             if(str_contains($parsedURL, $blockedFolder)) {
                 $this->not_found();
             }
         }
-
+    }
+    private function checkAllowedFileTypes($fileExtensions, $fileMimeTypes, $parsedURL): void
+    {
         if (in_array(pathinfo($parsedURL, PATHINFO_EXTENSION), $fileExtensions)) {
             $filepath = ".".$parsedURL;
             if (file_exists($filepath)) {
                 header("Content-Type: " . $fileMimeTypes[pathinfo($filepath, PATHINFO_EXTENSION)]);
                 readfile($filepath);
             } else {
-                die("soubor nenalezen!");
+                $this->not_found();
             }
             exit();
         }
     }
-
     public function get($route, $path_to_include): void
     {
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -54,7 +62,6 @@ class Router {
             $this->route($route, $path_to_include);
         }
     }
-
     public function getpost($route, $path_to_include): void
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST' || $_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -137,7 +144,6 @@ class Router {
     {
         echo htmlspecialchars($text);
     }
-
     public function set_csrf(): void
     {
         session_start();
@@ -146,7 +152,6 @@ class Router {
         }
         echo '<input type="hidden" name="csrf" value="' . $_SESSION["csrf"] . '">';
     }
-
     public function is_csrf_valid(): bool
     {
         session_start();
@@ -158,12 +163,12 @@ class Router {
         }
         return true;
     }
-
-    private function not_found(): void {
+    #[NoReturn] public function not_found(): void {
         http_response_code(404);
         die();
     }
 }
-
 $router = new Router();
 $router->get("/", "views/index.php");
+$router->get("/example", "views/example.php");
+$router->not_found();
